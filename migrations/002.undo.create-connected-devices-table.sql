@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+DROP TABLE connected_devices;
+
+COMMIT;
