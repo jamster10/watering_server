@@ -1,8 +1,7 @@
-"use strict";
-
 const knex = require("knex");
 const app = require('./app');
 const { db, PORT } = require("./config.js");
+const { initializeJobs } = require('./tasks/')
 // const { betterLogger, getFunctionCallers } = require('./util/metaHelpers') //this line enables the awesome console.logs
 
 // knex({
@@ -22,8 +21,8 @@ const  restServer = app.listen(PORT, console.log('Welcome to the MaTriX', PORT))
 restServer.setTimeout(10000);
 
 
-
-
+//setup chron jobs
+initializeJobs({weather: true})
 
 
 

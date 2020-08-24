@@ -1,34 +1,24 @@
-const config = require('../../config');
-const xss = require('xss');
+const apiRainThreshold = 700;
+let shouldWater = false;
 
-const wateringService = {
-  getUserByUserName(db, username){
-    return db
-      .from('users')
-      .where({ username })
-      .first();
-  },
-  createUser(db, newUser){
-    return db
-      .insert(newUser)
-      .into('users')
-      .then(([newUserId]) => this.getUserById(db, newUserId));
-  },
-  getUserById(db, id){
-    return db
-      .from('users')
-      .where({ id })
-      .then(([user]) => this.serializeUser(user));
-  },
-  serializeUser(user) {
-    return {
-      username: xss(user.username),
-      email: xss(user.email),
-      phone: xss(user.phone),
-      updated_at: user.updated_at,
-      created_at: user.created_at,
-    };
-  },
+const getShouldWater = () => shouldWater;
+const setShouldWater = (currentWeather, hourlyWeather) => {
+  if (currentWeather.weatherCode < apiRainThreshold) {
+    shouldWater = false;
+    console.log(currentWeather)
+    return;
+  }
+  for (let hourData = 0; hourData < 11; hourData++) { 
+    if (hourlyWeather[hourData].weatherCode < apiRainThreshold) {
+      shouldWater = false;
+      console.log(hourlyWeather[hourData])
+      return;
+    }
+  }
+  shouldWater = true;
+}
+
+module.exports = {
+  getShouldWater,
+  setShouldWater
 };
-
-module.exports = wateringService;

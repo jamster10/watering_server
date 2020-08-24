@@ -2,10 +2,10 @@
 //willrun a job to check if no contact made in last x time, and ping phone
 
 const logger = (req, res, next) => {
-  const { deviceId } = req.body;
+  const deviceId = req.deviceId
   const time = Date.now();
   
-  console.log(deviceId, time)
+  console.log({deviceId, time})
   next()
 }
   

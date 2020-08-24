@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 module.exports = {
   PORT: process.env.REST_PORT || 8080,
   NODE_ENV: process.env.NODE_ENV || "development",
@@ -9,4 +10,8 @@ module.exports = {
     DB_NAME: process.env.MIGRATION_DB_USER,
     DB_PORT: process.env.MIGRATION_DB_PORT
   },
+  weatherApiKey: process.env.WEATHER_API_KEY,
+  lat: process.env.LAT,
+  lon: process.env.LON,
+  mac_address: process.env.TEST_MAC_ADDRESS,
 };

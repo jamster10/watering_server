@@ -14,7 +14,7 @@ const app = require('express')();
 
 //set up middleware
 app.use(morgan(morgan_settings));
-app.use(cors(cors_settings));
+// app.use(cors(cors_settings));
 app.use(helmet());
 app.use(authenticator)
 app.use(logger)
