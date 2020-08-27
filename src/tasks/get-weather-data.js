@@ -8,7 +8,7 @@ const { weatherApiKey, lat, lon } = require("../config.js");
 const weatherAPI = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely, daily&appid=${weatherApiKey}&units=imperial`
 
 const scheduleWeatherData = () => {
-  // getWeatherTask()
+  getWeatherTask()
   cron.schedule('0 */3 * * *', () => {
     console.log("Getting Weather Data")
     getWeatherTask()
@@ -30,6 +30,7 @@ const getWeatherTask = () => axios.get(weatherAPI).then(({ data }) => {
     weatherCode: hour.weather[0].id,
     description: hour.weather[0].description,
     temp: hour.temp,
+    chanceOfRain: hour.pop * 100  
   }))
 
   setShouldWater(currentWeather, hourlyWeather)
