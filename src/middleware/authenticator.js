@@ -1,6 +1,7 @@
-const { mac_address } = require('../config')
+const { mac_address, phone_mac } = require('../config')
 
 const DEVICES = [
+  phone_mac,
   mac_address
 ];
 

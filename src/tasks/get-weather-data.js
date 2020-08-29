@@ -8,7 +8,7 @@ const { weatherApiKey, lat, lon } = require("../config.js");
 const weatherAPI = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely, daily&appid=${weatherApiKey}&units=imperial`
 
 const scheduleWeatherData = () => {
-  getWeatherTask()
+  // getWeatherTask()
   cron.schedule('0 */3 * * *', () => {
     console.log("Getting Weather Data")
     getWeatherTask()
