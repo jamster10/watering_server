@@ -10,12 +10,43 @@ const htmlStub = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plant Data</title>
+  <style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+main {
+  width: 100%;
+  height: 100%;
+}
+
+#chart {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+</style>
 </head>
 <body>
   <header>
     <h3>Graph Data</h3>
   </header>
   <main>
+  <svg id="chart"></svg>
   </main>
   </body>
   </html>`
@@ -25,46 +56,96 @@ const generateGraph = async () => {
   const data = sanitizeData(rawDataArray)
 
   const { window } = new JSDOM(htmlStub, { runScripts: "outside-only" });
-  const container = window.document.querySelector('main')
+  const container = window.document.querySelector('#chart')
 
-  const margin = { top: 10, right: 30, bottom: 30, left: 60 },
-    width = 1400 - margin.left - margin.right,
-    height = 700 - margin.top - margin.bottom;
+  const margin = { top: 10, right: 30, bottom: 30, left: 60 };
+  const width = 1400 - margin.left - margin.right;
+  const height = 700 - margin.top - margin.bottom;
 
-  // append the svg object to the body of the page
-  const svg = d3.select(container)
-    .append("svg")
+  // Define scales
+  const xScale = d3.scaleTime().range([0, width]);
+  const yScale = d3.scaleLinear().range([height, 0]);
+  const color = d3.scaleOrdinal().range(d3.schemeCategory10);
+
+  // Define axes
+  const xAxis = d3.axisBottom().scale(xScale);
+  const yAxis = d3.axisLeft().scale(yScale);
+
+  // Define lines
+  const line = d3
+    .line()
+    .curve(d3.curveMonotoneX)
+    .x(function (d) {
+      return xScale(d["date"]);
+    })
+    .y(function (d) {
+      return yScale(d["value"]);
+    });
+
+  // Define svg canvas
+
+  const svg = d3
+    .select(container)
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
-    .attr("transform",
-      "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  //Read the data
-  const x = d3.scaleTime()
-    .domain(d3.extent(data, function (d) { return d.date; }))
-    .range([0, width]);
-  svg.append("g")
+  // Set the color domain equal to the three product categories
+  const sensorNames = ["Sensor A", "Sensor B", "Sensor C", "Average"]
+  color.domain(sensorNames);
+
+  const sensorData = sensorNames.map((sensor, sensorIdx) => ({
+    sensor,
+    datapoints: data.map(d => ({
+      date: d.date, value: d.data[sensorIdx]
+    }))
+  }))
+
+  // Set the domain of the axes
+  xScale.domain(
+    d3.extent(data, function (d) {
+      return d.date;
+    })
+  );
+
+  yScale.domain([650, 900]);
+
+  // Place the axes on the chart
+  svg
+    .append("g")
+    .attr("class", "x axis")
     .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x));
+    .call(xAxis);
 
-  // Add Y axis
-  var y = d3.scaleLinear()
-    .domain([650, d3.max(data, function (d) { return +d.avg; })])
-    .range([height, 0]);
-  svg.append("g")
-    .call(d3.axisLeft(y));
+  svg
+    .append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+    .append("text")
+    .attr("class", "label")
+    .attr("y", 6)
+    .attr("dy", ".71em")
+    .attr("dx", ".71em")
+    .style("text-anchor", "beginning")
+    .text("Sensor Reading");
 
-  // Add the line
-  svg.append("path")
-    .datum(data)
-    .attr("fill", "none")
-    .attr("stroke", "steelblue")
-    .attr("stroke-width", 1.5)
-    .attr("d", d3.line()
-      .x(function (d) { return x(d.date) })
-      .y(function (d) { return y(d.avg) })
-    )
+  const sensors = svg
+    .selectAll(".sensor")
+    .data(sensorData)
+    .enter()
+    .append("g")
+    .attr("class", "sensor");
+
+  sensors
+    .append("path")
+    .attr("class", "line")
+    .attr("d", function (d) {
+      return line(d.datapoints);
+    })
+    .style("stroke", function (d) {
+      return color(d.sensor);
+    });
 
   await fileSystem.writeHTMLData('./src/routes/watering/moisture-graph.html', window.document.documentElement.innerHTML)
 }
@@ -73,11 +154,10 @@ const sanitizeData = (arr) => {
   return arr.map(item => {
     const key = Object.keys(item)[0]
     const date = new Date(Number(key))
-    const avg = average(item[key])
+    const avg = Math.floor(average(item[key]))
     return {
       date,
-      data: item[key],
-      avg
+      data: [...item[key], avg]
     }
   })
 }

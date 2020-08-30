@@ -1,5 +1,3 @@
-'use strict';
-
 const express = require('express');
 const { getShouldWater } = require('./watering-service');
 const{ fileSystem } = require("../../util")
@@ -30,7 +28,6 @@ wateringRouter
         return res.json({shouldWater: true})
       }
     }
-
     return res.json({shouldWater: false})
   }); 
 
