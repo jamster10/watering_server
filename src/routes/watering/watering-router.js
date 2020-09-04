@@ -1,7 +1,10 @@
 const express = require('express');
+
 const { getShouldWater } = require('./watering-service');
+
 const{ fileSystem } = require("../../util")
 const { generateGraph } = require('../../util/generateGraph')
+const authenticator  = require('../../middleware/authenticator')
 
 const wateringRouter = express.Router();
 const moistureDataFile = './src/routes/watering/moisture-data.json'
@@ -16,7 +19,7 @@ wateringRouter
     const date = new Date(Number(key)).toLocaleString()
     return res.json({date, data: lastPost[key] })
   })
-  .post(express.json(), async (req, res, next) => {
+  .post(authenticator, express.json(), async (req, res, next) => {
     console.log(req.body)
     const { moisture_levels = [] } = req.body;
 
@@ -39,7 +42,7 @@ wateringRouter
       return res.sendFile(__dirname + '/moisture-graph.html');
       
     } catch (e){
-      console.log(e)
+      // console.log(e)
       res.json({error: 'didnt work'})
     }
   }) 

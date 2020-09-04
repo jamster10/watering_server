@@ -1,19 +1,15 @@
 'use strict';
 require('dotenv').config();
 const morgan = require('morgan');
-const cors = require('cors');
 const helmet = require('helmet');
 const app = require('express')();
 
-const { cors_settings, errorHandler, morgan_settings } = require('./util');
-const { authenticator, logger } = require ('./middleware');
+const { errorHandler, morgan_settings } = require('./util');
+const { logger } = require ('./middleware');
 const  { wateringRouter } = require('./routes')
 
-//set up middleware
 app.use(morgan(morgan_settings));
-// app.use(cors(cors_settings));
 app.use(helmet());
-// app.use(authenticator)
 app.use(logger)
 
 //routes

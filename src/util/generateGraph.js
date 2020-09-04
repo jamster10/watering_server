@@ -37,7 +37,6 @@ main {
 #chart {
   width: 100%;
   height: 100%;
-  position: absolute;
 }
 </style>
 </head>
@@ -109,7 +108,8 @@ const generateGraph = async () => {
     })
   );
 
-  yScale.domain([650, 900]);
+  const [min, max] = minMaxYValue(data)
+  yScale.domain([min - 10, max + 10]);
 
   // Place the axes on the chart
   svg
@@ -160,6 +160,19 @@ const sanitizeData = (arr) => {
       data: [...item[key], avg]
     }
   })
+}
+
+const minMaxYValue = (d) => {
+  let min = d[0].data[0];
+  let max = d[0].data[0];
+  for (let i = 0; i < d.length; i++) {
+    for (let j = 0; j < 4; j++) {
+      let value = d[i].data[j];
+      min = (value < min) ? value : min
+      max = (value > max) ? value : max
+    }
+  }
+  return [min, max]
 }
 
 const average = (array) => array.reduce((a, b) => a + b) / array.length;

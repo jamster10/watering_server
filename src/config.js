@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 module.exports = {
-  PORT: process.env.REST_PORT || 8080,
+  PORT: process.env.PORT || 8080,
   NODE_ENV: process.env.NODE_ENV || "development",
   db: {
     HOST: process.env.MIGRATION_DB_HOST,
