@@ -6,7 +6,6 @@ const fileSystem = {
       const data = await fs.readFile(location);
       const json = JSON.parse(data)
       json.push(newData)
-
       fs.writeFile(location, JSON.stringify(json), (err) => {
         if (err) console.log('error', err)
       });
@@ -22,10 +21,36 @@ const fileSystem = {
       console.error(e);
     }
   },
+  clearLastEntry: async (location) => {
+    try {
+      const data = await fs.readFile(location);
+      const json = JSON.parse(data)
+      json.pop()
+
+      await fs.writeFile(location, JSON.stringify(json), (err) => {
+        if (err) console.log('error', err)
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  },
+  clearData: async (location) => {
+    try {
+      const data = await fs.readFile(location);
+      const json = JSON.parse(data)
+      json.pop()
+
+      await fs.writeFile(location, JSON.stringify([]), (err) => {
+        if (err) console.log('error', err)
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  },
   writeHTMLData: async (location = '', data) => {
     try {
       await fs.writeFile(location, data)
-    }catch (e){
+    } catch (e) {
       console.log(e)
       console.log("Could not write data to file.")
     }
