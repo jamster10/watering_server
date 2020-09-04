@@ -14,5 +14,6 @@ module.exports = {
   lat: process.env.LAT,
   lon: process.env.LON,
   mac_address: process.env.TEST_MAC_ADDRESS,
+  mac_address2: process.env.TEST_MAC_ADDRESS2,
   phone_mac:process.env.PHONEMAC,
 };

@@ -1,8 +1,9 @@
-const { mac_address, phone_mac } = require('../config')
+const { mac_address, mac_address2, phone_mac } = require('../config')
 
 const DEVICES = [
   phone_mac,
-  mac_address
+  mac_address,
+  mac_address2
 ];
 
 const authenticator = (req, res, next) => {
